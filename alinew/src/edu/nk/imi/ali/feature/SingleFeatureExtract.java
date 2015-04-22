@@ -60,6 +60,15 @@ public class SingleFeatureExtract {
 	
 	String targetweekStr = "";//Mon Tue Wed Thu Fri Sat Sun
 	
+	/**
+	 * 
+	 * @param path
+	 * @param outpath
+	 * @param type 0:user 1:item 2:category
+	 * @param seperator online-train:"2014-12-18 00" online-test:"2014-12-19 00"
+	 * @param week if seperator = "2014-12-18 00" then Thu
+	 * 				if seperator = "2014-12-19 00" then Fri
+	 */
 	public void extractSingleFeature(String path,String outpath,String filename,
 			int type,String seperator,String week)
 	{
