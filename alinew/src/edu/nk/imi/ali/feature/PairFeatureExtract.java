@@ -37,7 +37,7 @@ public class PairFeatureExtract {
 			"cartWeekDayTotal",
 			"buyWeekDayTotal"	
 	};
-	public void extractPairFeature(String originalPath,String pairFeaturePath,String splitPointTime) throws Exception
+	public void extractPairFeature(String originalPath,String pairFeaturePath,String splitPointTime,boolean isPair) throws Exception
 	{
 		UtilReader util = new UtilReader();
 		util.init(originalPath);
@@ -50,7 +50,8 @@ public class PairFeatureExtract {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(splitDate);
 		//分割点日期的 day of week
-		int dayofweek = cal.DAY_OF_WEEK;
+		int dayofweek = cal.get( Calendar.DAY_OF_WEEK );
+		
 		//最近三天的基准
 		cal.add(Calendar.DAY_OF_MONTH, -3);
 		Date lastThreeDayDate = cal.getTime();
@@ -61,13 +62,23 @@ public class PairFeatureExtract {
 		
 		cal.add(Calendar.DAY_OF_MONTH, -7);
 		Date lastWeekDate = cal.getTime();
-				
+		int count = 0;
+		//去掉第一行
+		util.nextLine();
 		while((line = util.nextLine())!= null)
 		{
 			//parts[0] userid;  parts[1] itemid ; parts[2] behavior type; parts[3] user_geohash;
 			//parts[4] itemcategory; parts[5] time
 			String[] parts = line.split(",");
-			String pairKey = parts[0]+"_"+parts[1];
+			String pairKey="";
+			if(isPair)
+			{
+				pairKey = parts[0]+"_"+parts[1];
+			}
+			else
+			{
+				pairKey = parts[0]+"_"+parts[4];
+			}
 			//pairkey 不存在
 			if(!pairMap.containsKey(pairKey))
 			{
@@ -76,7 +87,7 @@ public class PairFeatureExtract {
 			Date date = sdf.parse(parts[5]);
 			cal.clear();
 			cal.setTime(date);
-			int dayofweekTmp = cal.DAY_OF_WEEK;
+			int dayofweekTmp = cal.get(Calendar.DAY_OF_WEEK);
 			switch (parts[2])
 			{
 			//click
@@ -267,10 +278,18 @@ public class PairFeatureExtract {
 				}
 				break;
 			}
-			
+			count++;
+			if(count%1000 == 0)
+			{
+				System.out.println(count+"done");
+			}
 		}
+		System.out.println("提取特征"+"done");
+		count = 0;
 		//遍历pair对 计算cvr ,actionperday, time interval to end,
 		//计算scale所需的最大值，最小值
+		int fday = 0;
+		int lday = 0;
 		HashMap<String, PairFeatureStatis> statisMap = new HashMap<String, PairFeatureStatis>();
 		for (Iterator<Entry<String, PairFeature>> iterator = pairMap.entrySet().iterator(); iterator.hasNext();) {
 			Entry<String, PairFeature> entry = (Entry<String, PairFeature>) iterator.next();
@@ -285,57 +304,90 @@ public class PairFeatureExtract {
 				pf.cvr =  (double)pf.buyTotal;
 			}
 			//action perday
-			cal.setTime(sdf.parse(pf.clickFtime));
-			int fday = cal.DAY_OF_YEAR;
-			cal.setTime(sdf.parse(pf.clickLtime));
-			int lday = cal.DAY_OF_YEAR;
-			if((lday-fday) != 0)
+			
+			if(pf.clickTotal == 0)
 			{
-				pf.clickPerday = (double)pf.clickTotal/(double)(lday-fday);
+				pf.clickPerday = 0;
 			}
 			else
 			{
-				pf.clickPerday = (double)pf.clickTotal;
+				cal.setTime(sdf.parse(pf.clickFtime));
+				fday = cal.get(Calendar.DAY_OF_YEAR);
+				cal.setTime(sdf.parse(pf.clickLtime));
+				lday = cal.get(Calendar.DAY_OF_YEAR);
+				if((lday-fday) != 0)
+				{
+					pf.clickPerday = (double)pf.clickTotal/(double)(lday-fday);
+				}
+				else
+				{
+					pf.clickPerday = (double)pf.clickTotal;
+				}	
+			}
+			fday= 0;
+			lday = 0;
+			if(pf.favTotal == 0)
+			{
+				pf.favPerday=0;
+			}
+			else
+			{
+				cal.setTime(sdf.parse(pf.favFtime));
+				fday = cal.get(Calendar.DAY_OF_YEAR);
+				cal.setTime(sdf.parse(pf.favLtime));
+				lday = cal.get(Calendar.DAY_OF_YEAR);;
+				if((lday-fday) != 0)
+				{
+					pf.favPerday = (double)pf.favTotal/(double)(lday-fday);
+				}
+				else
+				{
+					pf.favPerday = (double)pf.favTotal;
+				}
+			}
+			fday= 0;
+			lday = 0;
+			if(pf.cartTotal == 0)
+			{
+				pf.cartPerday=0;
+			}
+			else
+			{
+				cal.setTime(sdf.parse(pf.cartFtime));
+				fday = cal.get(Calendar.DAY_OF_YEAR);;
+				cal.setTime(sdf.parse(pf.cartLtime));
+				lday = cal.get(Calendar.DAY_OF_YEAR);;
+				if((lday-fday) != 0)
+				{
+					pf.cartPerday = (double)pf.cartTotal/(double)(lday-fday);
+				}
+				else
+				{
+					pf.cartPerday = (double)pf.cartTotal;
+				}
+			}
+			fday= 0;
+			lday = 0;
+			if(pf.buyTotal==0)
+			{
+				pf.buyPerday = 0;
+			}
+			else
+			{
+				cal.setTime(sdf.parse(pf.buyFtime));
+				fday = cal.get(Calendar.DAY_OF_YEAR);;
+				cal.setTime(sdf.parse(pf.buyLtime));
+				lday = cal.get(Calendar.DAY_OF_YEAR);;
+				if((lday-fday) != 0)
+				{
+					pf.buyPerday = (double)pf.buyTotal/(double)(lday-fday);
+				}
+				else
+				{
+					pf.buyPerday = (double)pf.buyTotal;
+				}
 			}
 			
-			cal.setTime(sdf.parse(pf.favFtime));
-			fday = cal.DAY_OF_YEAR;
-			cal.setTime(sdf.parse(pf.favLtime));
-			lday = cal.DAY_OF_YEAR;
-			if((lday-fday) != 0)
-			{
-				pf.favPerday = (double)pf.favTotal/(double)(lday-fday);
-			}
-			else
-			{
-				pf.favPerday = (double)pf.favTotal;
-			}
-			
-			cal.setTime(sdf.parse(pf.cartFtime));
-			fday = cal.DAY_OF_YEAR;
-			cal.setTime(sdf.parse(pf.cartLtime));
-			lday = cal.DAY_OF_YEAR;
-			if((lday-fday) != 0)
-			{
-				pf.cartPerday = (double)pf.cartTotal/(double)(lday-fday);
-			}
-			else
-			{
-				pf.cartPerday = (double)pf.cartTotal;
-			}
-			
-			cal.setTime(sdf.parse(pf.buyFtime));
-			fday = cal.DAY_OF_YEAR;
-			cal.setTime(sdf.parse(pf.buyLtime));
-			lday = cal.DAY_OF_YEAR;
-			if((lday-fday) != 0)
-			{
-				pf.buyPerday = (double)pf.buyTotal/(double)(lday-fday);
-			}
-			else
-			{
-				pf.buyPerday = (double)pf.buyTotal;
-			}
 			
 			//time interval to end
 			pf.clickInterval = hourDiff(pf.clickLtime, splitPointTime, format);
@@ -357,8 +409,14 @@ public class PairFeatureExtract {
 					statisMap.get(featureName[i]).max = pfArray[i];
 				}
 			}
+			count++;
+			if(count%1000==0)
+			{
+				System.out.println(count+"done");
+			}
 		}
-		
+		System.out.println("scale"+"done");
+		count=0;
 		//输出特征文件
 		FileWriter fw = new FileWriter(pairFeaturePath, true);
 		for (Iterator<Entry<String, PairFeature>> iterator = pairMap.entrySet().iterator(); iterator.hasNext();) {
@@ -372,23 +430,34 @@ public class PairFeatureExtract {
 					tmp = (pfArray[i]-statisMap.get(featureName[i]).min)/(statisMap.get(featureName[i]).max-statisMap.get(featureName[i]).min);
 
 				}
-				BigDecimal bg = new BigDecimal(tmp);  
-		        double f1 = bg.setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-		        res+=","+f1;
+//				BigDecimal bg = new BigDecimal(tmp);  
+//		        double f1 = bg.setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+				
+		        res+=","+String.format("%.4f", tmp);
 
 			}
 			fw.write(res+"\r\n");
+			count++;
+			if(count%1000==0)
+			{
+				System.out.println(count+"done");
+			}
 			
 		}
 		fw.close();
+		System.out.println("输出"+"done");
 	}
 
 	public int hourDiff(String startTime ,String endTime,String format) throws Exception
 	{
+		if(startTime .equals(""))
+		{
+			startTime="2014-11-18 00";
+		}
 		 SimpleDateFormat sd = new SimpleDateFormat(format); 
 		 long diff;  
 		 diff = sd.parse(endTime).getTime() - sd.parse(startTime).getTime();   
-		 int hour = (int) (diff % (1000 * 60 * 60));
+		 int hour = (int) (diff / (1000 * 60 * 60));
 		 return hour;
 	}
 }
