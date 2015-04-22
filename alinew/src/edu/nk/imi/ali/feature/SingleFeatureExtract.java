@@ -164,6 +164,7 @@ public class SingleFeatureExtract {
 					updateWeekAction(lineid,DAY_OF_WEEK_ACTION_BUY,date);
 					break;
 				default:
+					
 					break;
 				}
 			}

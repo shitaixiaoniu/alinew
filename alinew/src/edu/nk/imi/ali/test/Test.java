@@ -13,7 +13,7 @@ public class Test {
 		System.out.println("------------start--------");
 		new SingleFeatureExtract().extractSingle(
 				pathpre_source+"tianchi_mobile_recommend_train_user.txt",
-				pathpre_feature+"online_train_feature_cate.txt",2,"2014-12-18 00","Thu");
+				pathpre_feature+"online_train_feature_cate2.txt",2,"2014-12-18 00","Thu");
 		System.out.println("------------end--------");
 	}
 
