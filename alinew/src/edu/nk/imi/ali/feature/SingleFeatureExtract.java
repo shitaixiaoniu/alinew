@@ -1,8 +1,11 @@
 package edu.nk.imi.ali.feature;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -191,19 +194,8 @@ public class SingleFeatureExtract {
 //					ACTION_BUY_LAST_TIME,PER_WEEK_ACTION_BUY);
 			
 			System.out.println("start scale:"+new Date().toString());
-			scaleAll();
+			scaleAll(outpath);
 			
-			System.out.println("start write:"+new Date().toString());
-			FileWriter writer = new FileWriter(outpath, true);
-			Iterator<String> ite = map.keySet().iterator();
-			while(ite.hasNext())
-			{
-				String str = "";
-				String key = ite.next();
-				str = key+","+getOneLineFeature(key)+"\r\n";
-				writer.write(str);
-			}
-			writer.close();
 			System.out.println("done!"+new Date().toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -211,70 +203,71 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-	public String getOneLineFeature(String key)
-	{
-		String str = "";
-		
-        double f1 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_CLICK)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f2 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_FAV)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f3 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_CART)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f4 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_BUY)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f5 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_CLICK)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f6 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_FAV)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f7 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_CART)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        
-        double f8 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_BUY)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f9 = new BigDecimal((Double)map.get(key).get(CVR)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f10 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_CLICK)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f11 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_FAV)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f12 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_CART)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f13 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_BUY)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f14 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_CLICK)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        
-        double f15 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_FAV)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f16 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_CART)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f17 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_BUY)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f18 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_CLICK)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f19 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_FAV)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f20 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_CART)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f21 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_BUY)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        
-        double f22 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_CLICK)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f23 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_FAV)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f24 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_CART)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double f25 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_BUY)).
-        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-		
-		str = f1+","+f2+","+f3+","+f4+","+f5+","+f6+","+f7+","+f8+","+f9+","+f10+","+f11+","+
-				f12+","+f13+","+f14+","+f15+","+f16+","+f17+","+f18+","+f19+","+f20+","+f21+","+
-				f22+","+f23+","+f24+","+f25;
-				
-		return str;
-	}
+//	public String getOneLineFeature(String key)
+//	{
+//		String str = "";
+//		
+//        double f1 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_CLICK)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f2 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_FAV)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f3 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_CART)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f4 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_BUY)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        
+//        double f5 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_CLICK)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f6 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_FAV)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f7 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_CART)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        
+//        double f8 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_BUY)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f9 = new BigDecimal((Double)map.get(key).get(CVR)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f10 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_CLICK)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f11 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_FAV)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f12 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_CART)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f13 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_BUY)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f14 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_CLICK)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        
+//        double f15 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_FAV)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f16 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_CART)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f17 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_BUY)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f18 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_CLICK)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f19 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_FAV)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f20 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_CART)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f21 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_BUY)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        
+//        double f22 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_CLICK)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f23 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_FAV)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f24 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_CART)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        double f25 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_BUY)).
+//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+//		
+//		str = f1+","+f2+","+f3+","+f4+","+f5+","+f6+","+f7+","+f8+","+f9+","+f10+","+f11+","+
+//				f12+","+f13+","+f14+","+f15+","+f16+","+f17+","+f18+","+f19+","+f20+","+f21+","+
+//				f22+","+f23+","+f24+","+f25;
+//				
+//		return str;
+//	}
 	
 	public void assembleCvr()
 	{
@@ -282,8 +275,8 @@ public class SingleFeatureExtract {
 		while(ite.hasNext())
 		{
 			String key = ite.next();
-			Double click = (Double)map.get(key).get(TOTAL_ACTION_CLICK);
-			Double buy = (Double)map.get(key).get(TOTAL_ACTION_BUY);
+			Integer click = (Integer)map.get(key).get(TOTAL_ACTION_CLICK);
+			Integer buy = (Integer)map.get(key).get(TOTAL_ACTION_BUY);
 			
 			if(buy==null)
 			{
@@ -306,7 +299,7 @@ public class SingleFeatureExtract {
 		while(ite.hasNext())
 		{
 			String key = ite.next();
-			Double value = (Double)map.get(key).get(field_num);
+			Object value = map.get(key).get(field_num);
 			Date fdate = (Date)map.get(key).get(field_fdate);
 			Date ldate = (Date)map.get(key).get(field_ldate);
 
@@ -336,7 +329,16 @@ public class SingleFeatureExtract {
 				}
 				else
 				{
-					map.get(key).put(field_perday, value/day);
+					double vv = 0.0;
+					if(value instanceof Integer)
+					{
+						vv = (int)value+0.0;
+					}
+					else
+					{
+						vv = (double)value;
+					}
+					map.get(key).put(field_perday, vv/day);
 				}
 			}
 		}
@@ -358,22 +360,73 @@ public class SingleFeatureExtract {
 //		}
 //	}
 	
-	public void scaleAll()
+	public void writeFile(String outpath,ArrayList<Integer> ls)
 	{
+		try {
+			DecimalFormat df = new DecimalFormat("#.0000");
+			
+			FileWriter writer = new FileWriter(outpath, true);
+			Iterator<String> ite = map.keySet().iterator();
+			while(ite.hasNext())
+			{
+				String str = "";
+				String key = ite.next();
+				str = key;
+				
+				for(int i=0;i<ls.size();i++)
+				{
+//					double f = new BigDecimal((double)map.get(key).get(ls.get(i))).
+//			        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+					String f = String.format("%.4f",(double)map.get(key).get(ls.get(i)));
+					
+					if(f.equals("0.0000"))
+					{
+						f = "0.0";
+					}
+					//System.out.println(f);
+					str = str +","+f;
+					map.get(key).put(ls.get(i),null);
+				}
+				
+				writer.write(str+"\r\n");
+			}
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		System.out.println("done!");
+	}
+	
+	public void scaleAll(String outdir)
+	{
+		ArrayList<Integer> ls = new ArrayList<Integer>();
+		
 		System.out.println("start scale 1"+new Date().toString());
 		scale(TOTAL_ACTION_CLICK);
 		scale(TOTAL_ACTION_FAV);
 		scale(TOTAL_ACTION_CART);
 		scale(TOTAL_ACTION_BUY);
 		
-		System.out.println("start scale 2_1"+new Date().toString());
+		ls.add(TOTAL_ACTION_CLICK);
+		ls.add(TOTAL_ACTION_FAV);
+		ls.add(TOTAL_ACTION_CART);
+		ls.add(TOTAL_ACTION_BUY);
+		writeFile(outdir+"1.txt",ls);
+		
+		
+		System.out.println("start scale 2"+new Date().toString());
 		scale(DISTINCT_ACTION_CLICK);
-		System.out.println("start scale 2_2"+new Date().toString());
 		scale(DISTINCT_ACTION_FAV);
-		System.out.println("start scale 2_3"+new Date().toString());
 		scale(DISTINCT_ACTION_CART);
-		System.out.println("start scale 2_4"+new Date().toString());
 		scale(DISTINCT_ACTION_BUY);
+		
+		ls.clear();
+		ls.add(DISTINCT_ACTION_CLICK);
+		ls.add(DISTINCT_ACTION_FAV);
+		ls.add(DISTINCT_ACTION_CART);
+		ls.add(DISTINCT_ACTION_BUY);
+		writeFile(outdir+"2.txt",ls);
 		
 		System.out.println("start scale 3"+new Date().toString());
 		scale(CVR);
@@ -384,10 +437,13 @@ public class SingleFeatureExtract {
 		scale(PER_DAY_ACTION_CART);
 		scale(PER_DAY_ACTION_BUY);
 		
-//		scale(PER_WEEK_ACTION_CLICK);
-//		scale(PER_WEEK_ACTION_FAV);
-//		scale(PER_WEEK_ACTION_CART);
-//		scale(PER_WEEK_ACTION_BUY);
+		ls.clear();
+		ls.add(CVR);
+		ls.add(PER_DAY_ACTION_CLICK);
+		ls.add(PER_DAY_ACTION_FAV);
+		ls.add(PER_DAY_ACTION_CART);
+		ls.add(PER_DAY_ACTION_BUY);
+		writeFile(outdir+"3.txt",ls);
 		
 		System.out.println("start scale 5"+new Date().toString());
 		scale(LATEST_3DAY_ACTION_CLICK);
@@ -395,17 +451,38 @@ public class SingleFeatureExtract {
 		scale(LATEST_3DAY_ACTION_CART);
 		scale(LATEST_3DAY_ACTION_BUY);
 		
+		ls.clear();
+		ls.add(LATEST_3DAY_ACTION_CLICK);
+		ls.add(LATEST_3DAY_ACTION_FAV);
+		ls.add(LATEST_3DAY_ACTION_CART);
+		ls.add(LATEST_3DAY_ACTION_BUY);
+		writeFile(outdir+"4.txt",ls);
+		
 		System.out.println("start scale 6"+new Date().toString());
 		scale(LATEST_WEEK_ACTION_CLICK);
 		scale(LATEST_WEEK_ACTION_FAV);
 		scale(LATEST_WEEK_ACTION_CART);
 		scale(LATEST_WEEK_ACTION_BUY);
 		
+		ls.clear();
+		ls.add(LATEST_WEEK_ACTION_CLICK);
+		ls.add(LATEST_WEEK_ACTION_FAV);
+		ls.add(LATEST_WEEK_ACTION_CART);
+		ls.add(LATEST_WEEK_ACTION_BUY);
+		writeFile(outdir+"5.txt",ls);
+		
 		System.out.println("start scale 7"+new Date().toString());
 		scale(DAY_OF_WEEK_ACTION_CLICK);
 		scale(DAY_OF_WEEK_ACTION_FAV);
 		scale(DAY_OF_WEEK_ACTION_CART);
 		scale(DAY_OF_WEEK_ACTION_BUY);
+		
+		ls.clear();
+		ls.add(DAY_OF_WEEK_ACTION_CLICK);
+		ls.add(DAY_OF_WEEK_ACTION_FAV);
+		ls.add(DAY_OF_WEEK_ACTION_CART);
+		ls.add(DAY_OF_WEEK_ACTION_BUY);
+		writeFile(outdir+"6.txt",ls);
 	
 	}
 	
@@ -419,7 +496,7 @@ public class SingleFeatureExtract {
 		while(ite.hasNext())
 		{
 			String key = ite.next();
-			Double value = (Double)map.get(key).get(field);
+			Object value = map.get(key).get(field);
 			
 			if(value == null)
 			{
@@ -427,7 +504,16 @@ public class SingleFeatureExtract {
 			}
 			else
 			{
-				map.get(key).put(field, (value-min)/dvalue);
+				double vv = 0.0;
+				if(value instanceof Integer)
+				{
+					vv = (int)value+0.0;
+				}
+				else
+				{
+					vv = (double)value;
+				}
+				map.get(key).put(field, (vv-min)/dvalue);
 			}
 			
 		}
@@ -443,7 +529,7 @@ public class SingleFeatureExtract {
 			
 			String key = ite.next();
 			
-			Double value = (Double)map.get(key).get(field);
+			Object value = map.get(key).get(field);
 			
 			if(value == null)
 			{
@@ -455,20 +541,29 @@ public class SingleFeatureExtract {
 			}
 			else
 			{
-				if(max==null || min==null)
+				double vv = 0.0;
+				if(value instanceof Integer)
 				{
-					max = value;
-					min = value;
+					vv = (int)value+0.0;
 				}
 				else
 				{
-					if(value>max)
+					vv = (double)value;
+				}
+				if(max==null || min==null)
+				{
+					max = vv;
+					min = vv;
+				}
+				else
+				{
+					if(vv>max)
 					{
-						max = value;
+						max = vv;
 					}
-					if(value<min)
+					if(vv<min)
 					{
-						min = value;
+						min = vv;
 					}
 				}
 			}
@@ -490,11 +585,11 @@ public class SingleFeatureExtract {
 	{
 		if(map.get(map_key).containsKey(field))
 		{
-			map.get(map_key).put(field, (Double)map.get(map_key).get(field)+1.0);
+			map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
 		}
 		else
 		{
-			map.get(map_key).put(field, 1.0);
+			map.get(map_key).put(field, 1);
 		}
 	}
 	
@@ -506,11 +601,11 @@ public class SingleFeatureExtract {
 			
 			if(map.get(map_key).containsKey(field))
 			{
-				map.get(map_key).put(field, (Double)map.get(map_key).get(field)+1.0);
+				map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
 			}
 			else
 			{
-				map.get(map_key).put(field, 1.0);
+				map.get(map_key).put(field, 1);
 			}
 		}
 		
@@ -587,11 +682,11 @@ public class SingleFeatureExtract {
 		{
 			if(map.get(map_key).containsKey(field))
 			{
-				map.get(map_key).put(field, (Double)map.get(map_key).get(field)+1.0);
+				map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
 			}
 			else
 			{
-				map.get(map_key).put(field, 1.0);
+				map.get(map_key).put(field, 1);
 			}
 		}
 	}
@@ -602,11 +697,11 @@ public class SingleFeatureExtract {
 		{
 			if(map.get(map_key).containsKey(field))
 			{
-				map.get(map_key).put(field, (Double)map.get(map_key).get(field)+1.0);
+				map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
 			}
 			else
 			{
-				map.get(map_key).put(field, 1.0);
+				map.get(map_key).put(field, 1);
 			}
 		}
 	}
