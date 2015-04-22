@@ -2,14 +2,13 @@ package edu.nk.imi.ali.feature;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import edu.nk.imi.ali.util.UtilFile;
 import edu.nk.imi.ali.util.UtilReader;
 
 public class SingleFeatureExtract {
@@ -56,15 +55,43 @@ public class SingleFeatureExtract {
 	public static int PER_DAY_ACTION_CART = 32;
 	public static int PER_DAY_ACTION_BUY = 33;
 	
-//	public static int PER_WEEK_ACTION_CLICK = 34;
-//	public static int PER_WEEK_ACTION_FAV = 35;
-//	public static int PER_WEEK_ACTION_CART = 36;
-//	public static int PER_WEEK_ACTION_BUY = 37;
-	
 	HashMap<String,HashMap<Integer,Object>> map = new HashMap<String,HashMap<Integer,Object>>();
 	HashMap<String,Object> map_for_distinct = new HashMap<String,Object>();
 	
 	String targetweekStr = "";//Mon Tue Wed Thu Fri Sat Sun
+	
+	public void extractSingleFeature(String path,String outpath,String filename,
+			int type,String seperator,String week)
+	{
+		extractSingle(path,outpath, type, seperator, week,1);
+		extractSingle(path,outpath, type, seperator, week,2);
+		extractSingle(path,outpath, type, seperator, week,3);
+		extractSingle(path,outpath, type, seperator, week,4);
+		extractSingle(path,outpath, type, seperator, week,5);
+		extractSingle(path,outpath, type, seperator, week,6);
+		
+		ArrayList<String> tmpath_Ls = new ArrayList<String>();
+		tmpath_Ls.add(outpath+"1.txt");
+		tmpath_Ls.add(outpath+"2.txt");
+		tmpath_Ls.add(outpath+"3.txt");
+		tmpath_Ls.add(outpath+"4.txt");
+		tmpath_Ls.add(outpath+"5.txt");
+		tmpath_Ls.add(outpath+"6.txt");
+		
+		try {
+			new SingleFeatureFileAssemble().assembleFeatureSingle(tmpath_Ls, outpath+filename);
+			
+			UtilFile.deleFile(outpath+"1.txt");
+			UtilFile.deleFile(outpath+"2.txt");
+			UtilFile.deleFile(outpath+"3.txt");
+			UtilFile.deleFile(outpath+"4.txt");
+			UtilFile.deleFile(outpath+"5.txt");
+			UtilFile.deleFile(outpath+"6.txt");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * 
@@ -75,7 +102,7 @@ public class SingleFeatureExtract {
 	 * @param week if seperator = "2014-12-18 00" then Thu
 	 * 				if seperator = "2014-12-19 00" then Fri
 	 */
-	public void extractSingle(String path,String outpath,int type,String seperator,String week)
+	private void extractSingle(String path,String outpath,int type,String seperator,String week,int part)
 	{
 		int index_pos = 0;
 		int index_pos_distinct = 1;
@@ -135,36 +162,100 @@ public class SingleFeatureExtract {
 				switch(behaviour_type)
 				{
 				case 1:
-					increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
-					increaseDistinctNum(lineid, DISTINCT_ACTION_CLICK, distinctid);
-					updateTime(lineid,ACTION_CLICK_FIRST_TIME,ACTION_CLICK_LAST_TIME,date);
-					updateTimeAction(lineid,LATEST_3DAY_ACTION_CLICK,date_last3day,date);
-					updateTimeAction(lineid,LATEST_WEEK_ACTION_CLICK,date_last1week,date);
-					updateWeekAction(lineid,DAY_OF_WEEK_ACTION_CLICK,date);
+					switch(part)
+					{
+					case 1:
+						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						break;
+					case 2:
+						increaseDistinctNum(lineid, DISTINCT_ACTION_CLICK, distinctid);
+						break;
+					case 3:
+						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						updateTime(lineid,ACTION_CLICK_FIRST_TIME,ACTION_CLICK_LAST_TIME,date);
+						break;
+					case 4:
+						updateTimeAction(lineid,LATEST_3DAY_ACTION_CLICK,date_last3day,date);
+						break;
+					case 5:
+						updateTimeAction(lineid,LATEST_WEEK_ACTION_CLICK,date_last1week,date);
+						break;
+					case 6:
+						updateWeekAction(lineid,DAY_OF_WEEK_ACTION_CLICK,date);
+						break;
+					}
 					break;
 				case 2:
-					increaseTotalNum(lineid, TOTAL_ACTION_FAV);
-					increaseDistinctNum(lineid, DISTINCT_ACTION_FAV, distinctid);
-					updateTime(lineid,ACTION_FAV_FIRST_TIME,ACTION_FAV_LAST_TIME,date);
-					updateTimeAction(lineid,LATEST_3DAY_ACTION_FAV,date_last3day,date);
-					updateTimeAction(lineid,LATEST_WEEK_ACTION_FAV,date_last1week,date);
-					updateWeekAction(lineid,DAY_OF_WEEK_ACTION_FAV,date);
+					switch(part)
+					{
+					case 1:
+						increaseTotalNum(lineid, TOTAL_ACTION_FAV);
+						break;
+					case 2:
+						increaseDistinctNum(lineid, DISTINCT_ACTION_FAV, distinctid);
+						break;
+					case 3:
+						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						updateTime(lineid,ACTION_FAV_FIRST_TIME,ACTION_FAV_LAST_TIME,date);
+						break;
+					case 4:
+						updateTimeAction(lineid,LATEST_3DAY_ACTION_FAV,date_last3day,date);
+						break;
+					case 5:
+						updateTimeAction(lineid,LATEST_WEEK_ACTION_FAV,date_last1week,date);
+						break;
+					case 6:
+						updateWeekAction(lineid,DAY_OF_WEEK_ACTION_FAV,date);
+						break;
+					}
 					break;
 				case 3:
-					increaseTotalNum(lineid, TOTAL_ACTION_CART);
-					increaseDistinctNum(lineid, DISTINCT_ACTION_CART, distinctid);
-					updateTime(lineid,ACTION_CART_FIRST_TIME,ACTION_CART_LAST_TIME,date);
-					updateTimeAction(lineid,LATEST_3DAY_ACTION_CART,date_last3day,date);
-					updateTimeAction(lineid,LATEST_WEEK_ACTION_CART,date_last1week,date);
-					updateWeekAction(lineid,DAY_OF_WEEK_ACTION_CART,date);
+					switch(part)
+					{
+					case 1:
+						increaseTotalNum(lineid, TOTAL_ACTION_CART);
+						break;
+					case 2:
+						increaseDistinctNum(lineid, DISTINCT_ACTION_CART, distinctid);
+						break;
+					case 3:
+						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						updateTime(lineid,ACTION_CART_FIRST_TIME,ACTION_CART_LAST_TIME,date);
+						break;
+					case 4:
+						updateTimeAction(lineid,LATEST_3DAY_ACTION_CART,date_last3day,date);
+						break;
+					case 5:
+						updateTimeAction(lineid,LATEST_WEEK_ACTION_CART,date_last1week,date);
+						break;
+					case 6:
+						updateWeekAction(lineid,DAY_OF_WEEK_ACTION_CART,date);
+						break;
+					}
 					break;
 				case 4:
-					increaseTotalNum(lineid, TOTAL_ACTION_BUY);
-					increaseDistinctNum(lineid, DISTINCT_ACTION_BUY, distinctid);
-					updateTime(lineid,ACTION_BUY_FIRST_TIME,ACTION_BUY_LAST_TIME,date);
-					updateTimeAction(lineid,LATEST_3DAY_ACTION_BUY,date_last3day,date);
-					updateTimeAction(lineid,LATEST_WEEK_ACTION_BUY,date_last1week,date);
-					updateWeekAction(lineid,DAY_OF_WEEK_ACTION_BUY,date);
+					switch(part)
+					{
+					case 1:
+						increaseTotalNum(lineid, TOTAL_ACTION_BUY);
+						break;
+					case 2:
+						increaseDistinctNum(lineid, DISTINCT_ACTION_BUY, distinctid);
+						break;
+					case 3:
+						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						updateTime(lineid,ACTION_BUY_FIRST_TIME,ACTION_BUY_LAST_TIME,date);
+						break;
+					case 4:
+						updateTimeAction(lineid,LATEST_3DAY_ACTION_BUY,date_last3day,date);
+						break;
+					case 5:
+						updateTimeAction(lineid,LATEST_WEEK_ACTION_BUY,date_last1week,date);
+						break;
+					case 6:
+						updateWeekAction(lineid,DAY_OF_WEEK_ACTION_BUY,date);
+						break;
+					}
 					break;
 				default:
 					
@@ -172,29 +263,26 @@ public class SingleFeatureExtract {
 				}
 			}
 			
-			System.out.println("start assemble:"+new Date().toString());
-			assembleCvr();
-			
-			assemblePerDay(TOTAL_ACTION_CLICK,ACTION_CLICK_FIRST_TIME,
-					ACTION_CLICK_LAST_TIME,PER_DAY_ACTION_CLICK);
-			assemblePerDay(TOTAL_ACTION_FAV,ACTION_FAV_FIRST_TIME,
-					ACTION_FAV_LAST_TIME,PER_DAY_ACTION_FAV);
-			assemblePerDay(TOTAL_ACTION_CART,ACTION_CART_FIRST_TIME,
-					ACTION_CART_LAST_TIME,PER_DAY_ACTION_CART);
-			assemblePerDay(TOTAL_ACTION_BUY,ACTION_BUY_FIRST_TIME,
-					ACTION_BUY_LAST_TIME,PER_DAY_ACTION_BUY);
-			
-//			assemblePerWeek(TOTAL_ACTION_CLICK, ACTION_CLICK_FIRST_TIME, 
-//					ACTION_CLICK_LAST_TIME, PER_WEEK_ACTION_CLICK);
-//			assemblePerWeek(TOTAL_ACTION_FAV,ACTION_FAV_FIRST_TIME,
-//					ACTION_FAV_LAST_TIME,PER_WEEK_ACTION_FAV);
-//			assemblePerWeek(TOTAL_ACTION_CART,ACTION_CART_FIRST_TIME,
-//					ACTION_CART_LAST_TIME,PER_WEEK_ACTION_CART);
-//			assemblePerWeek(TOTAL_ACTION_BUY,ACTION_BUY_FIRST_TIME,
-//					ACTION_BUY_LAST_TIME,PER_WEEK_ACTION_BUY);
+			if(part==1)
+			{
+				System.out.println("start assemble:"+new Date().toString());
+				assembleCvr();
+			}
+			else if(part == 3)
+			{
+				System.out.println("start assemble:"+new Date().toString());
+				assemblePerDay(TOTAL_ACTION_CLICK,ACTION_CLICK_FIRST_TIME,
+						ACTION_CLICK_LAST_TIME,PER_DAY_ACTION_CLICK);
+				assemblePerDay(TOTAL_ACTION_FAV,ACTION_FAV_FIRST_TIME,
+						ACTION_FAV_LAST_TIME,PER_DAY_ACTION_FAV);
+				assemblePerDay(TOTAL_ACTION_CART,ACTION_CART_FIRST_TIME,
+						ACTION_CART_LAST_TIME,PER_DAY_ACTION_CART);
+				assemblePerDay(TOTAL_ACTION_BUY,ACTION_BUY_FIRST_TIME,
+						ACTION_BUY_LAST_TIME,PER_DAY_ACTION_BUY);
+			}
 			
 			System.out.println("start scale:"+new Date().toString());
-			scaleAll(outpath);
+			scaleAll(outpath,part);
 			
 			System.out.println("done!"+new Date().toString());
 		} catch (Exception e) {
@@ -203,73 +291,7 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-//	public String getOneLineFeature(String key)
-//	{
-//		String str = "";
-//		
-//        double f1 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_CLICK)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f2 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_FAV)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f3 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_CART)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f4 = new BigDecimal((Double)map.get(key).get(TOTAL_ACTION_BUY)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        
-//        double f5 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_CLICK)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f6 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_FAV)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f7 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_CART)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        
-//        double f8 = new BigDecimal((Double)map.get(key).get(DISTINCT_ACTION_BUY)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f9 = new BigDecimal((Double)map.get(key).get(CVR)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f10 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_CLICK)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f11 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_FAV)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f12 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_CART)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f13 = new BigDecimal((Double)map.get(key).get(PER_DAY_ACTION_BUY)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f14 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_CLICK)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        
-//        double f15 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_FAV)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f16 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_CART)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f17 = new BigDecimal((Double)map.get(key).get(LATEST_3DAY_ACTION_BUY)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f18 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_CLICK)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f19 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_FAV)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f20 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_CART)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f21 = new BigDecimal((Double)map.get(key).get(LATEST_WEEK_ACTION_BUY)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        
-//        double f22 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_CLICK)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f23 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_FAV)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f24 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_CART)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//        double f25 = new BigDecimal((Double)map.get(key).get(DAY_OF_WEEK_ACTION_BUY)).
-//        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-//		
-//		str = f1+","+f2+","+f3+","+f4+","+f5+","+f6+","+f7+","+f8+","+f9+","+f10+","+f11+","+
-//				f12+","+f13+","+f14+","+f15+","+f16+","+f17+","+f18+","+f19+","+f20+","+f21+","+
-//				f22+","+f23+","+f24+","+f25;
-//				
-//		return str;
-//	}
-	
-	public void assembleCvr()
+	private void assembleCvr()
 	{
 		Iterator<String> ite = map.keySet().iterator();
 		while(ite.hasNext())
@@ -293,7 +315,7 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-	public void assemblePerDay(int field_num,int field_fdate,int field_ldate,int field_perday)
+	private void assemblePerDay(int field_num,int field_fdate,int field_ldate,int field_perday)
 	{
 		Iterator<String> ite = map.keySet().iterator();
 		while(ite.hasNext())
@@ -344,27 +366,9 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-//	public void assemblePerWeek(int field_num,int field_fdate,int field_ldate,int field_perweek)
-//	{
-//		Iterator<String> ite = map.keySet().iterator();
-//		while(ite.hasNext())
-//		{
-//			String key = ite.next();
-//			Double value = (Double)map.get(key).get(field_num);
-//			Date fdate = (Date)map.get(key).get(field_fdate);
-//			Date ldate = (Date)map.get(key).get(field_ldate);
-//			
-//			int week = (int) ((ldate.getTime()-fdate.getTime())/(7*24*3600000));
-//			
-//			map.get(key).put(field_perweek, value/week);
-//		}
-//	}
-	
-	public void writeFile(String outpath,ArrayList<Integer> ls)
+	private void writeFile(String outpath,ArrayList<Integer> ls)
 	{
 		try {
-			DecimalFormat df = new DecimalFormat("#.0000");
-			
 			FileWriter writer = new FileWriter(outpath, true);
 			Iterator<String> ite = map.keySet().iterator();
 			while(ite.hasNext())
@@ -375,17 +379,14 @@ public class SingleFeatureExtract {
 				
 				for(int i=0;i<ls.size();i++)
 				{
-//					double f = new BigDecimal((double)map.get(key).get(ls.get(i))).
-//			        		setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
 					String f = String.format("%.4f",(double)map.get(key).get(ls.get(i)));
 					
 					if(f.equals("0.0000"))
 					{
 						f = "0.0";
 					}
-					//System.out.println(f);
 					str = str +","+f;
-					map.get(key).put(ls.get(i),null);
+					//map.get(key).put(ls.get(i),null);
 				}
 				
 				writer.write(str+"\r\n");
@@ -398,95 +399,96 @@ public class SingleFeatureExtract {
 		System.out.println("done!");
 	}
 	
-	public void scaleAll(String outdir)
+	private void scaleAll(String outdir,int part)
 	{
+		System.out.println("start scale"+new Date().toString());
 		ArrayList<Integer> ls = new ArrayList<Integer>();
 		
-		System.out.println("start scale 1"+new Date().toString());
-		scale(TOTAL_ACTION_CLICK);
-		scale(TOTAL_ACTION_FAV);
-		scale(TOTAL_ACTION_CART);
-		scale(TOTAL_ACTION_BUY);
-		
-		ls.add(TOTAL_ACTION_CLICK);
-		ls.add(TOTAL_ACTION_FAV);
-		ls.add(TOTAL_ACTION_CART);
-		ls.add(TOTAL_ACTION_BUY);
-		writeFile(outdir+"1.txt",ls);
-		
-		
-		System.out.println("start scale 2"+new Date().toString());
-		scale(DISTINCT_ACTION_CLICK);
-		scale(DISTINCT_ACTION_FAV);
-		scale(DISTINCT_ACTION_CART);
-		scale(DISTINCT_ACTION_BUY);
-		
-		ls.clear();
-		ls.add(DISTINCT_ACTION_CLICK);
-		ls.add(DISTINCT_ACTION_FAV);
-		ls.add(DISTINCT_ACTION_CART);
-		ls.add(DISTINCT_ACTION_BUY);
-		writeFile(outdir+"2.txt",ls);
-		
-		System.out.println("start scale 3"+new Date().toString());
-		scale(CVR);
-		
-		System.out.println("start scale 4"+new Date().toString());
-		scale(PER_DAY_ACTION_CLICK);
-		scale(PER_DAY_ACTION_FAV);
-		scale(PER_DAY_ACTION_CART);
-		scale(PER_DAY_ACTION_BUY);
-		
-		ls.clear();
-		ls.add(CVR);
-		ls.add(PER_DAY_ACTION_CLICK);
-		ls.add(PER_DAY_ACTION_FAV);
-		ls.add(PER_DAY_ACTION_CART);
-		ls.add(PER_DAY_ACTION_BUY);
-		writeFile(outdir+"3.txt",ls);
-		
-		System.out.println("start scale 5"+new Date().toString());
-		scale(LATEST_3DAY_ACTION_CLICK);
-		scale(LATEST_3DAY_ACTION_FAV);
-		scale(LATEST_3DAY_ACTION_CART);
-		scale(LATEST_3DAY_ACTION_BUY);
-		
-		ls.clear();
-		ls.add(LATEST_3DAY_ACTION_CLICK);
-		ls.add(LATEST_3DAY_ACTION_FAV);
-		ls.add(LATEST_3DAY_ACTION_CART);
-		ls.add(LATEST_3DAY_ACTION_BUY);
-		writeFile(outdir+"4.txt",ls);
-		
-		System.out.println("start scale 6"+new Date().toString());
-		scale(LATEST_WEEK_ACTION_CLICK);
-		scale(LATEST_WEEK_ACTION_FAV);
-		scale(LATEST_WEEK_ACTION_CART);
-		scale(LATEST_WEEK_ACTION_BUY);
-		
-		ls.clear();
-		ls.add(LATEST_WEEK_ACTION_CLICK);
-		ls.add(LATEST_WEEK_ACTION_FAV);
-		ls.add(LATEST_WEEK_ACTION_CART);
-		ls.add(LATEST_WEEK_ACTION_BUY);
-		writeFile(outdir+"5.txt",ls);
-		
-		System.out.println("start scale 7"+new Date().toString());
-		scale(DAY_OF_WEEK_ACTION_CLICK);
-		scale(DAY_OF_WEEK_ACTION_FAV);
-		scale(DAY_OF_WEEK_ACTION_CART);
-		scale(DAY_OF_WEEK_ACTION_BUY);
-		
-		ls.clear();
-		ls.add(DAY_OF_WEEK_ACTION_CLICK);
-		ls.add(DAY_OF_WEEK_ACTION_FAV);
-		ls.add(DAY_OF_WEEK_ACTION_CART);
-		ls.add(DAY_OF_WEEK_ACTION_BUY);
-		writeFile(outdir+"6.txt",ls);
-	
+		switch(part)
+		{
+		case 1:
+			scale(TOTAL_ACTION_CLICK);
+			scale(TOTAL_ACTION_FAV);
+			scale(TOTAL_ACTION_CART);
+			scale(TOTAL_ACTION_BUY);
+			scale(CVR);
+			
+			ls.add(TOTAL_ACTION_CLICK);
+			ls.add(TOTAL_ACTION_FAV);
+			ls.add(TOTAL_ACTION_CART);
+			ls.add(TOTAL_ACTION_BUY);
+			ls.add(CVR);
+			writeFile(outdir+"1.txt",ls);
+			break;
+		case 2:
+			scale(DISTINCT_ACTION_CLICK);
+			scale(DISTINCT_ACTION_FAV);
+			scale(DISTINCT_ACTION_CART);
+			scale(DISTINCT_ACTION_BUY);
+			
+			ls.clear();
+			ls.add(DISTINCT_ACTION_CLICK);
+			ls.add(DISTINCT_ACTION_FAV);
+			ls.add(DISTINCT_ACTION_CART);
+			ls.add(DISTINCT_ACTION_BUY);
+			writeFile(outdir+"2.txt",ls);
+			break;
+		case 3:
+			scale(PER_DAY_ACTION_CLICK);
+			scale(PER_DAY_ACTION_FAV);
+			scale(PER_DAY_ACTION_CART);
+			scale(PER_DAY_ACTION_BUY);
+			
+			ls.clear();
+			ls.add(PER_DAY_ACTION_CLICK);
+			ls.add(PER_DAY_ACTION_FAV);
+			ls.add(PER_DAY_ACTION_CART);
+			ls.add(PER_DAY_ACTION_BUY);
+			writeFile(outdir+"3.txt",ls);
+			break;
+		case 4:
+			scale(LATEST_3DAY_ACTION_CLICK);
+			scale(LATEST_3DAY_ACTION_FAV);
+			scale(LATEST_3DAY_ACTION_CART);
+			scale(LATEST_3DAY_ACTION_BUY);
+			
+			ls.clear();
+			ls.add(LATEST_3DAY_ACTION_CLICK);
+			ls.add(LATEST_3DAY_ACTION_FAV);
+			ls.add(LATEST_3DAY_ACTION_CART);
+			ls.add(LATEST_3DAY_ACTION_BUY);
+			writeFile(outdir+"4.txt",ls);
+			break;
+		case 5:
+			scale(LATEST_WEEK_ACTION_CLICK);
+			scale(LATEST_WEEK_ACTION_FAV);
+			scale(LATEST_WEEK_ACTION_CART);
+			scale(LATEST_WEEK_ACTION_BUY);
+			
+			ls.clear();
+			ls.add(LATEST_WEEK_ACTION_CLICK);
+			ls.add(LATEST_WEEK_ACTION_FAV);
+			ls.add(LATEST_WEEK_ACTION_CART);
+			ls.add(LATEST_WEEK_ACTION_BUY);
+			writeFile(outdir+"5.txt",ls);
+			break;
+		case 6:
+			scale(DAY_OF_WEEK_ACTION_CLICK);
+			scale(DAY_OF_WEEK_ACTION_FAV);
+			scale(DAY_OF_WEEK_ACTION_CART);
+			scale(DAY_OF_WEEK_ACTION_BUY);
+			
+			ls.clear();
+			ls.add(DAY_OF_WEEK_ACTION_CLICK);
+			ls.add(DAY_OF_WEEK_ACTION_FAV);
+			ls.add(DAY_OF_WEEK_ACTION_CART);
+			ls.add(DAY_OF_WEEK_ACTION_BUY);
+			writeFile(outdir+"6.txt",ls);
+			break;
+		}
 	}
 	
-	public void scale(int field)
+	private void scale(int field)
 	{
 		HashMap<String,Object> mm = avgDvalue(field);
 		Double min = (Double)mm.get("min");
@@ -519,7 +521,7 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-	public HashMap<String,Object> avgDvalue(int field)
+	private HashMap<String,Object> avgDvalue(int field)
 	{
 		Iterator<String> ite = map.keySet().iterator();
 		Double max = null;
@@ -581,7 +583,7 @@ public class SingleFeatureExtract {
 		return mm;
 	}
 	
-	public void increaseTotalNum(String map_key,Integer field)
+	private void increaseTotalNum(String map_key,Integer field)
 	{
 		if(map.get(map_key).containsKey(field))
 		{
@@ -593,7 +595,7 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-	public void increaseDistinctNum(String map_key,Integer field,String distinct_key)
+	private void increaseDistinctNum(String map_key,Integer field,String distinct_key)
 	{
 		if(!map_for_distinct.containsKey(distinct_key))
 		{
@@ -611,7 +613,7 @@ public class SingleFeatureExtract {
 		
 	}
 
-	public void updateTime(String map_key,Integer field1,Integer field2,Date date)
+	private void updateTime(String map_key,Integer field1,Integer field2,Date date)
 	{
 		Date fdate = (Date)map.get(map_key).get(field1);
 		Date ldate = (Date)map.get(map_key).get(field2);
@@ -645,38 +647,10 @@ public class SingleFeatureExtract {
 		{
 			System.out.println("updateTime error");
 		}
-//		else if(fdate==null && ldate!=null)
-//		{
-//			if(date.after(ldate))
-//			{
-//				map.get(map_key).put(field1,ldate);
-//				map.get(map_key).put(field2,date);
-//				return;
-//			}
-//			else
-//			{
-//				map.get(map_key).put(field1,date);
-//				return;
-//			}
-//		}
-//		else if(fdate!=null && ldate==null)
-//		{
-//			if(date.before(fdate))
-//			{
-//				map.get(map_key).put(field1,date);
-//				map.get(map_key).put(field2,fdate);
-//				return;
-//			}
-//			else
-//			{
-//				map.get(map_key).put(field2,date);
-//				return;
-//			}
-//		}
 		
 	}
 	
-	public void updateTimeAction(String map_key,Integer field,Date ideal_date,Date date)
+	private void updateTimeAction(String map_key,Integer field,Date ideal_date,Date date)
 	{
 		if(date.after(ideal_date))
 		{
@@ -691,7 +665,7 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-	public void updateWeekAction(String map_key,Integer field,Date date)
+	private void updateWeekAction(String map_key,Integer field,Date date)
 	{
 		if(isDayOfWeek(date.toString()))
 		{
@@ -706,7 +680,7 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-	public boolean isDayOfWeek(String str)
+	private boolean isDayOfWeek(String str)
 	{
 		String week = str.substring(0, str.indexOf(" "));
 		if(week.equals(targetweekStr))
