@@ -1,7 +1,5 @@
 package edu.nk.imi.ali.test;
 
-import java.util.Date;
-
 import edu.nk.imi.ali.feature.SingleFeatureExtract;
 
 public class Test {
@@ -11,9 +9,9 @@ public class Test {
 		String pathpre_feature = "/Users/shitaixiaoniu/Desktop/alidata_new_newf/feature/";
 		
 		System.out.println("------------start--------");
-		new SingleFeatureExtract().extractSingle(
+		new SingleFeatureExtract().extractSingleFeature(
 				pathpre_source+"tianchi_mobile_recommend_train_user.txt",
-				pathpre_feature,1,"2014-12-18 00","Thu");
+				pathpre_feature,"online_test_feature_item",1,"2014-12-19 00","Fri");
 		System.out.println("------------end--------");
 	}
 
