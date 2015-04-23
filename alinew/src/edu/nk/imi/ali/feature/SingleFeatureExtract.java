@@ -155,7 +155,7 @@ public class SingleFeatureExtract {
 			
 			System.out.println("----start while:"+new Date().toString());
 			String line = null;
-			util.nextLine();
+			//util.nextLine();
 			while((line=util.nextLine())!=null)
 			{
 				String [] parts = line.split(",");
@@ -277,7 +277,7 @@ public class SingleFeatureExtract {
 			
 			if(part==1)
 			{
-				System.out.println("start assemble:"+new Date().toString());
+				System.out.println("start assemble CVR:"+new Date().toString());
 				assembleCvr();
 			}
 			else if(part == 3)
@@ -309,7 +309,7 @@ public class SingleFeatureExtract {
 			String key = ite.next();
 			Integer click = (Integer)map.get(key).get(TOTAL_ACTION_CLICK);
 			Integer buy = (Integer)map.get(key).get(TOTAL_ACTION_BUY);
-			
+
 			if(buy==null)
 			{
 				map.get(key).put(CVR, 0.0);
@@ -320,7 +320,9 @@ public class SingleFeatureExtract {
 			}
 			else
 			{
-				map.get(key).put(CVR, buy/click);
+				double v_buy = buy+0.0;
+				double v_click = click+0.0;
+				map.get(key).put(CVR, v_buy/v_click);
 			}
 		}
 	}
@@ -505,6 +507,17 @@ public class SingleFeatureExtract {
 		Double min = (Double)mm.get("min");
 		Double dvalue = (Double)mm.get("dvalue");
 		
+		System.out.println("scale:"+field+","+min+","+dvalue);
+		
+		if(dvalue==0.0)
+		{
+			System.out.println("error:dvalue=0!");
+		}
+		if(min==null || dvalue==null)
+		{
+			System.out.println("error!!!!!");
+		}
+		
 		Iterator<String> ite = map.keySet().iterator();
 		while(ite.hasNext())
 		{
@@ -527,6 +540,7 @@ public class SingleFeatureExtract {
 					vv = (double)value;
 				}
 				map.get(key).put(field, (vv-min)/dvalue);
+				
 			}
 			
 		}

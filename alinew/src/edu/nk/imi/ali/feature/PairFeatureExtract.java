@@ -63,8 +63,8 @@ public class PairFeatureExtract {
 		cal.add(Calendar.DAY_OF_MONTH, -7);
 		Date lastWeekDate = cal.getTime();
 		int count = 0;
-		//去掉第一行
-		util.nextLine();
+//		//去掉第一行
+//		util.nextLine();
 		while((line = util.nextLine())!= null)
 		{
 			//parts[0] userid;  parts[1] itemid ; parts[2] behavior type; parts[3] user_geohash;
