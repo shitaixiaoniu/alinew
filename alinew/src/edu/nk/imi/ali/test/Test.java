@@ -11,7 +11,7 @@ public class Test {
 		System.out.println("------------start--------");
 		new SingleFeatureExtract().extractSingleFeature(
 				pathpre_source+"tianchi_mobile_recommend_train_user.txt",
-				pathpre_feature,"online_test_item",1,"2014-12-19 00","Fri");
+				pathpre_feature,"online_test_cate",2,"2014-12-19 00","Fri");
 		System.out.println("------------end--------");
 	}
 

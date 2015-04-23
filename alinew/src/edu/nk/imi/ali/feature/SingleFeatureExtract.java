@@ -55,8 +55,8 @@ public class SingleFeatureExtract {
 	public static int PER_DAY_ACTION_CART = 32;
 	public static int PER_DAY_ACTION_BUY = 33;
 	
-	HashMap<String,HashMap<Integer,Object>> map = new HashMap<String,HashMap<Integer,Object>>();
-	HashMap<String,Object> map_for_distinct = new HashMap<String,Object>();
+	HashMap<String,HashMap<Integer,Object>> map;// = new HashMap<String,HashMap<Integer,Object>>();
+	HashMap<String,Object> map_for_distinct;// = new HashMap<String,Object>();
 	
 	String targetweekStr = "";//Mon Tue Wed Thu Fri Sat Sun
 	
@@ -113,6 +113,9 @@ public class SingleFeatureExtract {
 	 */
 	private void extractSingle(String path,String outpath,int type,String seperator,String week,int part)
 	{
+		map = new HashMap<String,HashMap<Integer,Object>>();
+		map_for_distinct = new HashMap<String,Object>();
+		
 		int index_pos = 0;
 		int index_pos_distinct = 1;
 		
@@ -150,7 +153,7 @@ public class SingleFeatureExtract {
 			
 			targetweekStr = week;
 			
-			System.out.println("start while"+new Date().toString());
+			System.out.println("----start while:"+new Date().toString());
 			String line = null;
 			util.nextLine();
 			while((line=util.nextLine())!=null)
@@ -204,7 +207,7 @@ public class SingleFeatureExtract {
 						increaseDistinctNum(lineid, DISTINCT_ACTION_FAV, distinctid);
 						break;
 					case 3:
-						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						increaseTotalNum(lineid, TOTAL_ACTION_FAV);
 						updateTime(lineid,ACTION_FAV_FIRST_TIME,ACTION_FAV_LAST_TIME,date);
 						break;
 					case 4:
@@ -228,7 +231,7 @@ public class SingleFeatureExtract {
 						increaseDistinctNum(lineid, DISTINCT_ACTION_CART, distinctid);
 						break;
 					case 3:
-						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						increaseTotalNum(lineid, TOTAL_ACTION_CART);
 						updateTime(lineid,ACTION_CART_FIRST_TIME,ACTION_CART_LAST_TIME,date);
 						break;
 					case 4:
@@ -252,7 +255,7 @@ public class SingleFeatureExtract {
 						increaseDistinctNum(lineid, DISTINCT_ACTION_BUY, distinctid);
 						break;
 					case 3:
-						increaseTotalNum(lineid, TOTAL_ACTION_CLICK);
+						increaseTotalNum(lineid, TOTAL_ACTION_BUY);
 						updateTime(lineid,ACTION_BUY_FIRST_TIME,ACTION_BUY_LAST_TIME,date);
 						break;
 					case 4:
@@ -289,9 +292,7 @@ public class SingleFeatureExtract {
 				assemblePerDay(TOTAL_ACTION_BUY,ACTION_BUY_FIRST_TIME,
 						ACTION_BUY_LAST_TIME,PER_DAY_ACTION_BUY);
 			}
-			
-			System.out.println("start scale:"+new Date().toString());
-			scaleAll(outpath,part);
+			scaleAll(outpath,part,map);
 			
 			System.out.println("done!"+new Date().toString());
 		} catch (Exception e) {
@@ -324,7 +325,8 @@ public class SingleFeatureExtract {
 		}
 	}
 	
-	private void assemblePerDay(int field_num,int field_fdate,int field_ldate,int field_perday)
+	private void assemblePerDay(int field_num,int field_fdate,
+			int field_ldate,int field_perday)
 	{
 		Iterator<String> ite = map.keySet().iterator();
 		while(ite.hasNext())
@@ -395,7 +397,7 @@ public class SingleFeatureExtract {
 						f = "0.0";
 					}
 					str = str +","+f;
-					//map.get(key).put(ls.get(i),null);
+					map.get(key).put(ls.get(i),null);
 				}
 				
 				writer.write(str+"\r\n");
@@ -405,12 +407,12 @@ public class SingleFeatureExtract {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		System.out.println("done!");
+		System.out.println("----write done!");
 	}
 	
-	private void scaleAll(String outdir,int part)
+	private void scaleAll(String outdir,int part,HashMap<String,HashMap<Integer,Object>> map)
 	{
-		System.out.println("start scale"+new Date().toString());
+		System.out.println("start scale:"+new Date().toString());
 		ArrayList<Integer> ls = new ArrayList<Integer>();
 		
 		switch(part)
@@ -594,9 +596,10 @@ public class SingleFeatureExtract {
 	
 	private void increaseTotalNum(String map_key,Integer field)
 	{
-		if(map.get(map_key).containsKey(field))
+		Object obj = map.get(map_key).get(field);
+		if(obj!=null)
 		{
-			map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
+			map.get(map_key).put(field, (int)obj+1);
 		}
 		else
 		{
@@ -610,9 +613,10 @@ public class SingleFeatureExtract {
 		{
 			map_for_distinct.put(distinct_key, null);
 			
-			if(map.get(map_key).containsKey(field))
+			Object obj = map.get(map_key).get(field);
+			if(obj!=null)
 			{
-				map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
+				map.get(map_key).put(field, (int)obj+1);
 			}
 			else
 			{
@@ -663,9 +667,10 @@ public class SingleFeatureExtract {
 	{
 		if(date.after(ideal_date))
 		{
-			if(map.get(map_key).containsKey(field))
+			Object obj = map.get(map_key).get(field);
+			if(obj!=null)
 			{
-				map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
+				map.get(map_key).put(field, (int)obj+1);
 			}
 			else
 			{
@@ -678,9 +683,10 @@ public class SingleFeatureExtract {
 	{
 		if(isDayOfWeek(date.toString()))
 		{
-			if(map.get(map_key).containsKey(field))
+			Object obj = map.get(map_key).get(field);
+			if(obj!=null)
 			{
-				map.get(map_key).put(field, (int)map.get(map_key).get(field)+1);
+				map.get(map_key).put(field, (int)obj+1);
 			}
 			else
 			{
