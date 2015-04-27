@@ -1,4 +1,4 @@
-package edu.nk.imi.all.predict;
+package edu.nk.imi.ali.predict;
 
 import java.io.FileWriter;
 import java.util.HashMap;

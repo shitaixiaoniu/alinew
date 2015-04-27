@@ -1,4 +1,4 @@
-package edu.nk.imi.all.featuremerge;
+package edu.nk.imi.ali.featuremerge;
 
 import java.io.FileWriter;
 import java.io.IOException;
