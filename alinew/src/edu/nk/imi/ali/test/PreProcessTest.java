@@ -29,6 +29,8 @@ public class PreProcessTest {
 		String onlineTrainUICYPairPath = outPrefix+"online_train_uicy.txt";
 		String offlineTrainUICYPairPath = outPrefix+"offline_train_uicy.txt";
 		
+	
+		
 
 		DataPreProcess dpp = new DataPreProcess();
 		try {
@@ -56,7 +58,41 @@ public class PreProcessTest {
 //			dpp.getTrainUICYPair(onlineTrainOfflineTestUICPairPath, onlineTrainPositivePairPath, onlineTrainUICYPairPath);
 //			dpp.getTrainUICYPair(offlineTrainUICPairPath, offlineTrainPositivePairPath, offlineTrainUICYPairPath);
 			//将线上test uic用 candidateitem 过滤
-			dpp.filterPairByCandidate(originalCandidateItemPath, onlineTestUICPairPath, onlineTestUICPairFilterPath );
+			
+			String str = "/Users/shitaixiaoniu/Desktop/alidata_new_newf/offline_traintest_pair/";
+			dpp.filterPairByCandidate(originalCandidateItemPath, 
+					str + "offline_train_positive_pair_1217.txt", 
+					str + "offline_train_positive_pair_1217_filter.txt");
+			
+			//dpp.filterPairByCandidate(originalCandidateItemPath, onlineTestUICPairPath, onlineTestUICPairFilterPath );
+			
+//			String offlineTrainOriginal15Path = outPrefix+"original/original_offline_train_1118_1215.txt";
+//			String offlineTrainPredictOriginal16Path=outPrefix+"original/original_1216.txt";
+//
+//			String offlineTrainUICPair15Path = outPrefix+"original/original_offline_train_uic_1118_1215.txt";
+//			
+//			String offlineTrainPositivePair16Path = outPrefix+"offline_train_positive_pair_1216.txt";
+//			
+//			String offlineTrainUICYPair15Path = outPrefix+"offline_train_uicy_1118_1215.txt";
+//			
+//			String offlineTrainUICYPairFilter15Path = outPrefix+"original_offline_train_offline_test15_uic_filter.txt";
+//			//11-18 ~12-15
+//			dpp.getOriginalDataByRange("2014-11-18 00", "2014-12-15 23", originalPath, offlineTrainOriginal15Path );
+//			//1216号数据 用于线下的y标签
+//			dpp.getOriginalDataByRange("2014-12-16 00", "2014-12-16 23", originalPath, offlineTrainPredictOriginal16Path);
+//			//11-18 ~12-15 uic pair对
+//			dpp.getUICPairFromOriginal(offlineTrainOriginal15Path, offlineTrainUICPair15Path);
+//			//16号的正例
+//			dpp.getPositiveUIPair(offlineTrainPredictOriginal16Path, offlineTrainPositivePair16Path);
+//			//12.15之前的拼接y标签
+//			dpp.getTrainUICYPair(offlineTrainUICPair15Path, offlineTrainPositivePair16Path, offlineTrainUICYPair15Path);
+//			
+//			//对11-18~12.16的uic对进行过滤
+//			dpp.filterPairByCandidate(originalCandidateItemPath, offlineTrainUICPairPath, offlineTrainUICYPairFilter15Path);
+//			
+			
+			
+			
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -2,5 +2,15 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-buildtools-0.9.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-core-0.9-job.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-core-0.9.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-examples-0.9-job.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-examples-0.9.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-integration-0.9.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-math-0.9-sources.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-math-0.9.jar"/>
+	<classpathentry kind="lib" path="lib/mahout-math-scala-0.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
