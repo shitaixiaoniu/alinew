@@ -1,4 +1,4 @@
-package edu.nk.ini.all.predict;
+package edu.nk.imi.all.predict;
 
 import java.util.HashMap;
 
